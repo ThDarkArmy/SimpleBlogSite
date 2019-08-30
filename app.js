@@ -15,7 +15,7 @@ const app = express();
 
 app.set('view engine','ejs');
 
-app.use(bodyParser.urlencoded({etxtended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost:27017/blogDB", {useNewUrlParser: true});
@@ -46,6 +46,21 @@ app.post("/compose",function(req, res){
   res.redirect("/");
 });
 
+//Overriding get method to delete 
+
+app.get("/delete/:title", function(req,res){
+  var t = req.params.title;
+  console.log(t);
+  Post.deleteOne({title: t}, function(err){
+    if(err){
+      console.log("Error Occured while deleting!");
+    }else{
+      res.redirect("/");
+    }
+  });
+});
+
+
 app.get("/posts/:postName",function(req,res){
 
   const requestedTitle = _.lowerCase(req.params.postName);
@@ -73,15 +88,6 @@ app.get("/contact",function(req,res){
 app.get("/compose",function(req,res){
   res.render("compose");
 });
-
-
-
-
-
-
-
-
-
 
 
 app.listen(3000, function(){
